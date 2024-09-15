@@ -1,7 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
-import http from "http";
-import { Server } from "socket.io";
+import http from "http"; // Adicione o http para criar o servidor
+import { Server } from "socket.io"; // Importe o Socket.IO
 import cors from "cors";
 
 // Rotas e middlewares
@@ -10,8 +10,7 @@ import CadastroEmpresa from "./routes/publicas/criarEmpresa.js";
 import CriarVagas from "./routes/publicas/criarVaga.js";
 import listarVagas from "./routes/publicas/listarVaga.js";
 import increverVagas from "./routes/publicas/inscreverse.js";
-import Login from "./routes/publicas/login.js";
-
+import LoginUsuarios from "./routes/publicas/login.js";
 import ListarUsuarios from "./routes/privadas/listarUsuarios.js";
 import DeletarUsuarios from "./routes/privadas/deletarUsuarios.js";
 import EditarUsuarios from "./routes/privadas/editarUsuarios.js";
@@ -23,31 +22,15 @@ import auth from "./middlewares/auth.js";
 dotenv.config();
 
 const app = express();
-const server = http.createServer(app);
-
-// Obter variáveis de ambiente
-const PORT = process.env.PORT || 3003;
-const FRONTEND_URLS = (process.env.FRONTEND_URLS || '').split(',');
-
-// Configuração do Socket.IO
+const server = http.createServer(app); // Cria um servidor HTTP
 const io = new Server(server, {
   cors: {
-    origin: FRONTEND_URLS,
+    origin: 'http://localhost:3001', // Permitir o front-end
     methods: ["GET", "POST", "DELETE", "PUT"]
   }
 });
 
-// Middleware CORS
-app.use(cors({
-  origin: (origin, callback) => {
-    if (!origin || FRONTEND_URLS.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  }
-}));
-
+app.use(cors());
 app.use(express.json());
 
 // Rota para criar vagas e emitir evento para os clientes conectados
@@ -61,10 +44,10 @@ app.post("/criar-vaga", async (req, res) => {
   res.status(201).send({ vaga: novaVaga });
 });
 
-// Rotas públicas
+// Rotas
 app.use("/", CadastroUsuarios);
 app.use("/", CadastroEmpresa);
-app.use("/", Login);
+app.use("/", LoginUsuarios);
 app.use("/", CriarVagas);
 app.use("/", listarVagas);
 app.use("/", increverVagas);
@@ -77,6 +60,7 @@ app.use("/", auth, EditarUsuarios);
 app.use("/", auth, Aplicar);
 
 // Inicializar o servidor
+const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
 });

@@ -3,7 +3,6 @@ import bcrypt from "bcrypt";
 import { PrismaClient } from "@prisma/client";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
-import { body, validationResult } from "express-validator";
 
 // Carregar variáveis de ambiente
 dotenv.config();
@@ -13,23 +12,15 @@ const router = express.Router();
 
 // Use a chave secreta da variável de ambiente
 const JWT_SECRET = process.env.JWT_SECRET;
-if (!JWT_SECRET) {
-  throw new Error("JWT_SECRET não está definido no ambiente");
-}
 
-// Validação e sanitização de entrada
-const validateLogin = [
-  body('email').isEmail().withMessage('E-mail inválido'),
-  body('senha').isLength({ min: 6 }).withMessage('Senha deve ter pelo menos 6 caracteres')
-];
-
-router.post("/login", validateLogin, async (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
-  }
-
+// Rota de Login
+router.post("/login", async (req, res) => {
   const { email, senha } = req.body;
+
+  // Verifique se o e-mail e a senha foram fornecidos
+  if (!email || !senha) {
+    return res.status(400).json({ message: "E-mail e senha são obrigatórios" });
+  }
 
   try {
     // Encontre o usuário em ambas as tabelas
@@ -41,7 +32,6 @@ router.post("/login", validateLogin, async (req, res) => {
       userType = 'empresa'; // Se encontrado na tabela 'empresa', define o tipo como 'empresa'
     }
 
-    // Se o usuário não for encontrado ou a senha não corresponder
     if (!user || !(await bcrypt.compare(senha, user.senha))) {
       return res.status(400).json({ message: "E-mail ou senha inválidos" });
     }
