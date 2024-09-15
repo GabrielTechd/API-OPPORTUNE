@@ -1,11 +1,11 @@
 import express from 'express';
 import { PrismaClient } from '@prisma/client';
+import auth from './middleware/authMiddleware'; // Corrija o caminho conforme necessário
 
 const router = express.Router();
 const prisma = new PrismaClient();
 
-// Rota para listar o usuário específico
-router.get('/usuario', async (req, res) => {
+router.get('/usuario', auth, async (req, res) => {
   console.log('User ID:', req.userId); // Verifique se o userId está sendo passado corretamente
 
   const { userId } = req;
