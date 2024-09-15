@@ -10,7 +10,9 @@ import CadastroEmpresa from "./routes/publicas/criarEmpresa.js";
 import CriarVagas from "./routes/publicas/criarVaga.js";
 import listarVagas from "./routes/publicas/listarVaga.js";
 import increverVagas from "./routes/publicas/inscreverse.js";
-import LoginUsuarios from "./routes/publicas/login.js";
+import Login from "./routes/publicas/login.js";
+import Vaga from "./routes/publicas/vaga.js";
+
 import ListarUsuarios from "./routes/privadas/listarUsuarios.js";
 import DeletarUsuarios from "./routes/privadas/deletarUsuarios.js";
 import EditarUsuarios from "./routes/privadas/editarUsuarios.js";
@@ -63,10 +65,11 @@ app.post("/criar-vaga", async (req, res) => {
 // Rotas públicas
 app.use("/", CadastroUsuarios);
 app.use("/", CadastroEmpresa);
-app.use("/", LoginUsuarios);
+app.use("/", Login);
 app.use("/", CriarVagas);
 app.use("/", listarVagas);
 app.use("/", increverVagas);
+app.use("/", Vaga);
 
 // Rotas privadas
 app.use("/", auth, ListarUsuarios);
