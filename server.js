@@ -11,7 +11,6 @@ import CriarVagas from "./routes/publicas/criarVaga.js";
 import listarVagas from "./routes/publicas/listarVaga.js";
 import increverVagas from "./routes/publicas/inscreverse.js";
 import Login from "./routes/publicas/login.js";
-import Vaga from "./routes/publicas/vaga.js";
 
 import ListarUsuarios from "./routes/privadas/listarUsuarios.js";
 import DeletarUsuarios from "./routes/privadas/deletarUsuarios.js";
@@ -69,7 +68,6 @@ app.use("/", Login);
 app.use("/", CriarVagas);
 app.use("/", listarVagas);
 app.use("/", increverVagas);
-app.use("/", Vaga);
 
 // Rotas privadas
 app.use("/", auth, ListarUsuarios);
