@@ -10,7 +10,7 @@ dotenv.config();
 const app = express();
 const server = http.createServer(app);
 
-const allowedOrigins = ["http://localhost:3001", "https://opportune-sigma.vercel.app/"]; // Adicione todas as origens permitidas aqui
+const allowedOrigins = ["http://localhost:3000", "https://opportune-sigma.vercel.app/"]; // Adicione todas as origens permitidas aqui
 
 const io = new Server(server, {
   cors: {
