@@ -1,0 +1,86 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Candidato {
+  id           String        @id @default(auto()) @map("_id") @db.ObjectId
+  nome         String?
+  email        String        @unique
+  senha        String
+  telefone     String?
+  biografia    String?
+  site         String?
+  curriculo    String?
+  fotoPerfil   String?
+  habilidades  String[]
+  experiencia  Experiencia[] @relation("ExperienciaCandidato")
+  educacao     Educacao[]    @relation("EducacaoCandidato")
+  inscricoes   Inscricao[]   @relation("InscricaoCandidato")
+  dataCadastro DateTime      @default(now())
+  status       String
+}
+
+model Empresa {
+  id           String       @id @default(auto()) @map("_id") @db.ObjectId
+  nome         String?
+  email        String       @unique
+  senha        String
+  telefone     String?
+  biografia    String?
+  site         String?
+  cnpj         String       @unique
+  endereco     String?
+  dataFundacao DateTime?
+  descricao    String?
+  vagas        Vaga[]       @relation("VagaEmpresa")
+  inscricoes   Inscricao[]  @relation("InscricaoEmpresa")
+  dataCadastro DateTime     @default(now())
+  status       String
+}
+
+model Experiencia {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  empresa   String
+  cargo     String
+  inicio    DateTime
+  fim       DateTime
+  candidatoId String @db.ObjectId
+  candidato   Candidato @relation(fields: [candidatoId], references: [id], name: "ExperienciaCandidato")
+}
+
+model Educacao {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  instituicao String
+  curso       String
+  inicio      DateTime
+  fim         DateTime
+  candidatoId String @db.ObjectId
+  candidato   Candidato @relation(fields: [candidatoId], references: [id], name: "EducacaoCandidato")
+}
+
+model Vaga {
+  id          String       @id @default(auto()) @map("_id") @db.ObjectId
+  titulo      String
+  descricao   String
+  localizacao String
+  salario     Float?
+  dataPostada DateTime @default(now())
+  empresaId   String   @db.ObjectId
+  empresa     Empresa  @relation(fields: [empresaId], references: [id], name: "VagaEmpresa")
+  inscricoes  Inscricao[] @relation("InscricaoVaga")
+}
+
+model Inscricao {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  candidatoId String   @db.ObjectId
+  vagaId      String   @db.ObjectId
+  empresaId   String   @db.ObjectId
+  candidato   Candidato @relation(fields: [candidatoId], references: [id], name: "InscricaoCandidato")
+  vaga        Vaga      @relation(fields: [vagaId], references: [id], name: "InscricaoVaga")
+  empresa     Empresa   @relation(fields: [empresaId], references: [id], name: "InscricaoEmpresa")
+}

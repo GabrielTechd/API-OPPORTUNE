@@ -1,0 +1,37 @@
+import express from "express";
+
+const app = express()
+
+/*
+ Quantidade de rotas: 20
+
+ Públicas:
+    - POST /cadastro
+    - POST /login
+    - GET /api/empresas/:id
+    - GET /api/vagas/:id
+    - GET /api/vagas
+    - GET /api/candidatos/:id (para o próprio candidato)
+    - GET /api/aplicacoes/:id (para candidatos e empresas)
+
+ Privadas:
+    - POST /api/candidatos
+    - PUT /api/candidatos/:id
+    - DELETE /api/candidatos/:id
+    - POST /api/empresas
+    - PUT /api/empresas/:id
+    - DELETE /api/empresas/:id
+    - POST /api/vagas
+    - PUT /api/vagas/:id
+    - DELETE /api/vagas/:id
+    - POST /api/aplicacoes
+    - PUT /api/aplicacoes/:id
+    - DELETE /api/aplicacoes/:id
+    - GET /api/candidatos (para admins)
+    - GET /api/empresas (para admins)
+    - GET /api/aplicacoes (para admins)
+*/
+
+
+
+app.listen(3000, () => console.log("servidor rodando👌"))
