@@ -23,14 +23,31 @@ dotenv.config();
 
 const app = express();
 const server = http.createServer(app); // Cria um servidor HTTP
+
+// Converter a string FRONTEND_URLS em um array
+const allowedOrigins = process.env.FRONTEND_URLS.split(',');
+
 const io = new Server(server, {
   cors: {
-    origin: 'http://localhost:3001', // Permitir o front-end
-    methods: ["GET", "POST", "DELETE", "PUT"]
+    origin: function (origin, callback) {
+      // Verifica se a origem é permitida
+      if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
+    methods: ["GET", "POST", "DELETE", "PUT"],
+    credentials: true
   }
 });
 
-app.use(cors());
+app.use(cors({
+  origin: allowedOrigins,
+  methods: ["GET", "POST", "DELETE", "PUT"],
+  credentials: true
+}));
+
 app.use(express.json());
 
 // Rota para criar vagas e emitir evento para os clientes conectados

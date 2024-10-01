@@ -15,9 +15,13 @@ router.get('/usuario', async (req, res) => {
   }
 
   try {
-    // Buscar o usuário no banco de dados
+    // Buscar o usuário no banco de dados, incluindo experiências e educação
     const usuario = await prisma.candidato.findUnique({
-      where: { id: userId }
+      where: { id: userId },
+      include: {
+        experiencia: true, // Inclui as experiências
+        educacao: true,    // Inclui a educação
+      }
     });
 
     if (!usuario) {
