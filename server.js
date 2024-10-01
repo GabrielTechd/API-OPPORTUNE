@@ -23,14 +23,24 @@ dotenv.config();
 
 const app = express();
 const server = http.createServer(app); // Cria um servidor HTTP
+
+// Permitir CORS para os domínios especificados
+const allowedOrigins = [process.env.FRONTEND_ADM, process.env.FRONTEND_CLIENTE];
+
+const corsOptions = {
+  origin: allowedOrigins,
+  methods: ["GET", "POST", "DELETE", "PUT"],
+};
+
+// Configura o Socket.IO com CORS
 const io = new Server(server, {
   cors: {
-    origin: 'http://localhost:3001', // Permitir o front-end
-    methods: ["GET", "POST", "DELETE", "PUT"]
-  }
+    origin: allowedOrigins,
+    methods: ["GET", "POST", "DELETE", "PUT"],
+  },
 });
 
-app.use(cors());
+app.use(cors(corsOptions)); // Adicione as opções de CORS
 app.use(express.json());
 
 // Rota para criar vagas e emitir evento para os clientes conectados
