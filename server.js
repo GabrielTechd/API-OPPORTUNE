@@ -1,5 +1,3 @@
-@@ -0,0 +1,55 @@
-// Importando os módulos necessários
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
