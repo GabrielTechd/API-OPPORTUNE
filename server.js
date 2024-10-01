@@ -1,66 +1,55 @@
-import express from "express";
-import dotenv from "dotenv";
-import http from "http"; // Adicione o http para criar o servidor
-import { Server } from "socket.io"; // Importe o Socket.IO
-import cors from "cors";
+// Importando os módulos necessários
+import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
 
-// Rotas e middlewares
-import CadastroUsuarios from "./routes/publicas/criarCandidado.js";
-import CadastroEmpresa from "./routes/publicas/criarEmpresa.js";
-import CriarVagas from "./routes/publicas/criarVaga.js";
-import listarVagas from "./routes/publicas/listarVaga.js";
-import increverVagas from "./routes/publicas/inscreverse.js";
-import LoginUsuarios from "./routes/publicas/login.js";
-import ListarUsuarios from "./routes/privadas/listarUsuarios.js";
-import DeletarUsuarios from "./routes/privadas/deletarUsuarios.js";
-import EditarUsuarios from "./routes/privadas/editarUsuarios.js";
-import usuarioUnico from "./routes/privadas/usuario.js";
-import Aplicar from "./routes/privadas/aplicacao.js";
-import auth from "./middlewares/auth.js";
+import Cadastro from './rotas/publicas/cadastro.js';
+import Login from './rotas/publicas/login.js';
+import Contato from './rotas/publicas/contato.js'; // Certifique-se que esta exportação é padrão
+import ListaMensagens from './rotas/publicas/listaMensagens.js'; // Importe a nova rota
+import Posts from './rotas/publicas/posts.js'; // Importe a nova rota
+import Photos from './rotas/publicas/photo.js'; // Importe a nova rota
 
-// Carregar variáveis de ambiente
+import Usuarios from './rotas/privadas/usuarios.js'; // Rotas de usuários
+import UsuariosLogado from './rotas/privadas/usuarioLogado.js';
+import auth from './middleware/auth.js';
+
+// Carregar variáveis de ambiente do arquivo .env
 dotenv.config();
 
 const app = express();
-const server = http.createServer(app); // Cria um servidor HTTP
-const io = new Server(server, {
-  cors: {
-    origin: 'http://localhost:3001', // Permitir o front-end
-    methods: ["GET", "POST", "DELETE", "PUT"]
-  }
-});
-
-app.use(cors());
 app.use(express.json());
 
-// Rota para criar vagas e emitir evento para os clientes conectados
-app.post("/criar-vaga", async (req, res) => {
-  // Lógica para criar a vaga
-  const novaVaga = { /* Dados da vaga */ };
+// Configurar CORS para permitir múltiplos domínios
+const allowedOrigins = process.env.FRONTEND_URL.split(','); // Divide as URLs por vírgula
 
-  // Emite um evento via WebSocket para todos os clientes conectados
-  io.emit("novaVaga", novaVaga);
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true); // Permitir a origem
+    } else {
+      callback(new Error("Origin not allowed by CORS")); // Rejeitar a origem
+    }
+  },
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  credentials: true, // Permitir cookies e autorizações
+};
 
-  res.status(201).send({ vaga: novaVaga });
-});
+// Usar CORS com as opções configuradas
+app.use(cors(corsOptions));
 
-// Rotas
-app.use("/", CadastroUsuarios);
-app.use("/", CadastroEmpresa);
-app.use("/", LoginUsuarios);
-app.use("/", CriarVagas);
-app.use("/", listarVagas);
-app.use("/", increverVagas);
+// Rotas públicas
+app.use('/', Cadastro);
+app.use('/', Login);
+app.use('/', Contato); // A rota para contatos deve ser verificada aqui
+app.use('/', ListaMensagens); // Adicione a nova rota para listar mensagens
+app.use('/', Posts); // Adicione a nova rota para listar mensagens
+app.use('/', Photos); // Adicione a nova rota para listar mensagens
 
 // Rotas privadas
-app.use("/", auth, ListarUsuarios);
-app.use("/", auth, usuarioUnico);
-app.use("/", auth, DeletarUsuarios);
-app.use("/", auth, EditarUsuarios);
-app.use("/", auth, Aplicar);
+app.use('/', auth, Usuarios); // Adiciona as rotas de usuários protegidas
+app.use('/', auth, UsuariosLogado); // Rota para usuário logado
 
-// Inicializar o servidor
-const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
-  console.log(`Servidor rodando na porta ${PORT}`);
-});
+// Iniciar o servidor
+const PORT = process.env.PORT || 3000; // Permitir configuração de porta pelo ambiente
+app.listen(PORT, () => console.log(`Server rodando na porta ${PORT} 👌`));
